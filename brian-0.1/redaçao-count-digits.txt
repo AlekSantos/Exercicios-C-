@@ -1,0 +1,156 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*) Introdução 
+
+O programa count digits conta quantas vezes aparece um digito de 0 a 9,
+além de contar espaços em brancos(white spaces), e tudo que não for um
+número de 0 a 9 e também não for um espaço em branco entra na categoria
+outro.
+
+(*) Como usar o programa 
+
+A ultilizaçao do programa pode ser feita de 3 formas .
+ A primeira forma é chamando no shell ./count-digits, e apos
+isso escrever o que é desejado e no final usar Ctrl+d para encerrar a
+entrada. 
+A segunda forma é ultilizar a entrada definindo o count
+digits, exemplo :
+%echo 'o que se deseja de entrada' | ./count-digits, assim quando der
+ enter ja é retornada a saída da função que é a resposta. 
+ A terceira forma é chamar o count digits ja referenciando o texto que deseja
+ analisar exemplo :
+%./count-digits < /etc/services
+
+(*) Saída do programa
+
+A saída do nosso programa é determinado por esse bloco de função :
+printf("digits =");
+  for (int i = 0; i < 10; ++i)
+    printf(" %d", ndigit[i]);
+  printf(", white space = %d, other = %d\n", nwhite, nother);   
+
+esse bloco de função primeiro vai escrever na tela a palavra "digits",
+apos isso entramos em um loop for em definimos nosso contator contador
+como 0 e cada vez que execurtamos o que ta dentro desse loop acrecentamos um
+até a condição do for ser encerrada,que é quando o for, vai ser igual a
+10 pois a nossa condiçao para execução é que nosso for seja inferior a
+10. Dentro de cada comando do for iremos escrever a quantidade de vezes
+que cada digito apareceu começando do 0 indo até o 9. escrevemos isso
+atraves do printf que escreve o que ta dentro do arranjo ndigit que
+muda a cada i pois o ndigit de depende do i que ta sendo executado por
+isso é escrito ndigit[i]. Apos sairmos do laço for é escrito na mesma
+linha, pois não há uma quebra de linha como o \n , atraves do printf a
+quantidade de white space atraves da chamada do int nwhite e depois a
+chamada de other com a chamada da variavel nother.
+
+(*) Entendendo o programa
+
+#include <stdio.h>
+
+#define IN 1
+#define OUT 0
+
+int main(void) {
+  int c, nwhite, nother;
+  int ndigit[10]; /* 0, 1, 2, 3, 4, ..., 9 */
+
+  nwhite = nother = 0;
+  for (int i = 0; i < 10; ++i)
+    ndigit[i] = 0;
+
+  while ((c = getchar()) != EOF) {
+    if (c >= '0' && c <= '9')
+      ++ndigit[c - '0'];
+    else if (c == ' ' || c == '\n' || c == '\t')
+      ++nwhite;
+    else 
+      ++nother;
+  }
+  
+  printf("digits =");
+  for (int i = 0; i < 10; ++i)
+    printf(" %d", ndigit[i]);
+  printf(", white space = %d, other = %d\n", nwhite, nother);
+}
+
+Agora que aprendemos como é feita nossa entrada e saída de informações 
+precisamos saber como nosso programa é construido para que
+retorne as informações de forma correta. 
+
+primeiro temos a definição que IN é 1 e OUT é 0.
+
+int main(void) {
+  int c, nwhite, nother;
+  int ndigit[10]; /* 0, 1, 2, 3, 4, ..., 9 */
+
+Após isso temos a chamada da funçao principal int main. Temos como
+entrada definidas a variavel c,nwhite,nother. Temos também um arranjo
+definido que vai ate 10, pois na linguagem c o primeiro digito é zero
+(0).
+
+nwhite = nother = 0;
+nessa linha definimos que o valor dessas duas variaveis nossas sao zero.
+
+for (int i = 0; i < 10; ++i)
+   ndigit[i] = 0;
+
+nesse laço for temos que o i
+inical é zero que vai ser acrescentado enquanto i < 10 , o i vai ser
+acrescentado a cada vez que definir que ndigit[i]=0 ou seja essa função
+é feita para que para definirmos que nosso arranjo ndigit que vai de 0
+ate 9 começa em 0 para cada valor de 0 a 9.
+
+Agora que conhecemos as nossas variaveis vamos conhecer a parte
+fundamental do nosso programa.
+
+  while ((c = getchar()) != EOF) {
+    if (c >= '0' && c <= '9')
+      ++ndigit[c - '0'];
+    else if (c == ' ' || c == '\n' || c == '\t')
+      ++nwhite;
+    else 
+      ++nother; 
+      }
+
+
+Primeiro temos um loop que enquanto o que tiver dentro atender as
+condições esse laço vai ser executado. As condiçoes de executaçao do
+laço sao que a variavel c vai receber o valor de getchar(),Cada vez que
+é chamada, esta função lê um caractere teclado, e enquanto isso for
+diferente do EOF ,que é o "end of file" ou seja final do arquivo de
+entrada(ultimo caracter de entrada), O laço vai ser executado.
+
+Dentro do  laço temos um if, esse if analisa o valor que ta na variavel
+c(que é o getchar) e analisa se essa "valor" é maior ou igual a 0 e que
+tambem é igual ou menor que 9. se for é acrescentado 1 no ndigit, para
+saber em qual dos arrais esse valor é acrescentado temos que : 
+++ndigit[c - '0'] com isso sabemos que o valor do c(do getchar) vai ser
+diminuido do '0' que é 48 com isso da o valor de i. exemplo se o
+valor de c for 1 o valor de c vai ser '1' - '0' se '0' é 48 e segue a
+mesma sequencia 1 é igual a 49 entao temos 49-48 = 1 , ou seja no
+array 1 vai ser adicionado 1 .
+Agora partindo do :
+else if (c == ' ' || c == '\n' || c == '\t')
+      ++nwhite;
+Temos que se o c nao for um caracter de 0 a 9 , ele vai ser outra coisa essa coisa pode ser um espaço em branco
+com esse if podemos analisar se a variavel c é um tipo de espaço em branco se for a variavel nwhite vai ser acrescentada,ou seja estamos contando quantos espaços temos.
+else 
+      ++nother; 
+      }
+
+Se o caracter nao for um digito de 0 a 9 nem um espaço em branco vamos contar ele como outra coisa "other"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

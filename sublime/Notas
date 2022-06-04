@@ -1,0 +1,3 @@
+acesso antartica
+
+%ssh -i asantos.pem asantos@antartida.xyz

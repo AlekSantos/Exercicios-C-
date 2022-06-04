@@ -1,0 +1,288 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*) Introdução 
+O programa polonesa é uma calculadora polonesa
+reversa,que ultiliza um conjunto de arquivos para seu funcionamento. 
+
+
+(*) Como usar o programa 
+O programa pode ser ultilizado de 2 formas.
+A primeira forma é chamando no shell ./polonesa.exe , e após
+isso escrever o que é desejado e no final usar Ctrl+d para encerrar a
+entrada.      
+A segunda forma é ultilizar a entrada definindo a polonesa.exe, exemplo :
+%echo '1 1 +' | ./polonesa.exe, assim quando der enter ja é retornada a
+ saída do programa.
+
+Agora que sabemos chamar a função precisamos saber como escrever nossa
+entrada para recebermos o resultado correto. 
+Nossa calculadora é
+polonesa reversa,ou seja, precisamos colocar como entrada primeiro os
+argumentos e depois o operador.
+exemplo:
+%echo '1 1 +' | ./polonesa.exe
+    2 
+precisamos saber que a ordem que
+colocamos nosso argumento importa,ou seja, se queremos saber quanto é
+2-1 precisamos colocar: 
+
+ echo '2 1 -' | ./polonesa.exe
+    1 
+
+percebemos então que o primeiro argumento é colocado depois o operador e
+em seguida o segundo argumento.
+
+Quando queremos realizar uma operação tripla precisamos ter cuidado,o
+primeiro é que cada operador só faz a operação com 2 argumentos,o
+segundo cuidado é na disposição dos argumentos na calculadora.
+Por que o resultado abaixo é 14?
+
+%echo '2 3 4 + *' | ./polonesa.exe 
+    14 
+
+é devido ao fato de estarmos
+trabalhando com uma pilha que precisamos estar atento a forma que a
+calculadora trabalha.
+primeiro é feita a primeira operação com o primeiro operador, o +.
+
+primeiro é pego o antepenultimo da pilha e feita a operação com o ultimo
+da pilha,ficando :
+(3) (+) (4) = 7
+esse resultado 7 fica no topo da pilha .
+Após isso é feita a segunda operação com o segundo operador, o *.
+
+igual ao de cima,o antepenultimo da pilha é colocado primeiro depois o
+operador com o último da pilha,ficando:
+(2) (*) (7) = 14.
+
+Escrevendo uma forma geral de ultilizar a calculadora é que cada
+operador recebe dois argumentos e a ordem de como é feita a operação é
+o antepenultimo da pilha com o ultimo,quando a operação é feita esse
+resultado fica no topo da pilha.
+
+(*)Funcionamento do stack.c
+
+#include <stdio.h>
+#include "polonesa.h"
+#define MAXVAL 100
+
+int sp = 0; 
+int val[MAXVAL];
+
+void push(int n) {
+  if (sp < MAXVAL)
+    val[sp++] = n;
+  else
+    printf("error: stack full: %d\n", n);
+}
+
+int pop(void) {
+  if (sp > 0)
+    return val[--sp];
+  else {
+    printf("error: tried to pop an empty stack\n");
+    return 0;
+  }
+}
+
+Nesse codigo primeiro temos as definições em especial o programa
+polonesa.h e o também a definição que MAXVAL é 100.
+
+primeiro temos a definição da variavel sp que vai ser nosso contador e a
+variavel val[MAXVAL] que é nossa pilha que recebe no maximo 100 itens.
+
+o primeiro procedimento é o push que vai colocar o valor de entrada n na
+nossa pilha mas como fazemos isso ?
+
+primeiro temos um if que nosso contador tem que ser menor que o MAXVAL,
+se isso for verdade executamos o val[sp++]=n; essa linha vai colocar na
+pilha(val) o valor de n na posição sp(começa como 0) e depois vai
+incrementar esse sp para que a proxima execução seja colocado um novo
+valor na pilha de posição 1, pois sp foi crescido em 1 após executar
+esse comando. Se o valor de sp(contador) for maior que o MAXVAL vai
+aparecer uma mensagem dizendo que a pilha está cheia.
+
+O procedimento pop vai retirar o termo da pilha. Isso é feito analisando
+se o contador é maior que 1, se o sp for maior que 1 significa que tem
+algo em 0 no mínimo,se sp for maior que 0 vai retornar a pilha na
+posição sp(contador) -1 pois o procedimento de decremento está a esquerda da
+operação ou seja primeiro é feito a diminuição depois é executada a
+operação.Se nosso sp não for maior que 0 aparece uma mensagem dizendo
+que a pilha está vazia.
+
+Uma pilha funciona seguindo o padrao FILO (First in Last out), que
+significa que o primeiro elemento a entrar é o ultimo a sair, como se
+os elementos realmente estivessem empilhados um em cima do outro.
+
+(*)Mecanismo de buffer.
+
+O mecanismo de buffer é feito pelo programa getch.c, que tem duas
+funções,a função getch e a função ungetch.
+
+#include <stdio.h>
+#define BUFSIZE 100
+
+char buf[BUFSIZE]; /* a buffer for ungetch() */
+int p = 0; /* the next free position in buf */
+
+int getch(void) { /* get a (possibly pushed-back) character */
+  if (p > 0) 
+    return buf[--p];
+  else 
+    return getchar();
+}
+
+void ungetch(int c) {
+  if (p >= BUFSIZE)
+    printf("ungetch: too many characters; buffer full\n");
+  else
+    buf[p++] = c;
+}
+
+Primeiro temos a definção da biblioteca padrão é definindo o termo
+BUFSIZE igual a 100. Após isso temos a definição da variavel char buf
+[BUFSIZE] que tem tamanho 100 e a definição da nossa variavel contadora
+p que começa com valor 0.
+
+O ungetch recebe um int c e vê se tem espaço no buf, o contador (p) tem
+que ser menor que BUFSIZE, se for vai acrescentar o int c no buf no
+espaço p depois vai acrescentar 1 a esse p, ou seja no espaço p=0
+recebe c depois p é acrescentado em 1 e vira p=1.Se p for maior que
+BUFSIZE retorna um print dizendo que o buf está cheio.
+
+O getch vê se p é maior que 0 pra ver se ele ja foi prenchido se sim ele
+retorna o buff de tamanho p-1,pois o decremento está a esquerda,Ou seja
+essa função retorna o valor de c no espaço p-1,Se o p for 0 vai retorna
+o getchar.
+
+Eu acho que o Buffer é necessario pois é ultilizado como registro de
+dados mais eficiente para ser ultilizado no programa getop.c .
+
+(*)Funcionamento de getop.c
+
+#include <stdio.h>
+#include <ctype.h>
+#include "polonesa.h"
+
+int getop(char s[]) {
+  int i, c;
+
+  while ((s[0] = c = getch()) == ' ' || c == '\t')
+    ; /* skip white space */
+
+  s[1] = '\0'; 
+
+  if (!isdigit(c)) {
+    return c; /* not a digit, not an integer */
+  }
+
+  i = 0;
+  if (isdigit(c)) /* read the integer into s until its end */
+    while (isdigit(s[++i] = c = getch()))
+      ;
+  s[i] = '\0'; /* close the string */
+
+  if (c != EOF)
+    ungetch(c); 
+
+  return NUMBER;
+}
+
+Primeiro temos a definição das bibliotecas em especial polonesa.h que
+você pode acesar os outros programas como o getch.c .
+
+O getop recebe como entrada um char s, e tem variaveis definidas i e c.
+Primeiro temos o procedimento while que vai verificar o s de entada que
+vai ser igual ao getch e ao c , se esses termos for igual a espaço em
+branco,não vai fazer nada , ou seja esse bloco vai pular os espaços em
+branco.Após isso é fechada a string. O proximo bloco é o primeiro if,
+se não for um digito retorna o proprio c,seguindo temos o contador i
+definido como 0,após isso temos o segundo if , que verifica se o  c é
+um digito se for entra em um loop while que acrescenta uma posição em s
+(++i), e essa posição recebe o valor de getch que é o c. após o fim do
+loop temos a fechamento da string s com s[i]='\0', por ultimo temos
+mais um if que se o c for diferente de EOF(end of file) vai retornar o
+ungetch de c,fazemos isso pq o operador pode ta colocado no argumento
+(numero) digitado,exemplo 123+.Pra fechar o programa temos o retorno do
+NUMBER.
+
+(*)Procedimento main
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "polonesa.h"
+#define MAXOP 100
+
+int main(void) { /* a reverse-polish calculator */
+  int type; int op2; char s[MAXOP];
+
+  /* 
+     Como funciona um switch-statement?  Podemos responder usando a
+     própria linguagem C.  Veja o arquivo main-without-switch.c.  A
+     sequência de if-else que você encontra lá é o significado deste
+     /switch/ abaixo.
+  */
+
+  while ( (type = getop(s)) != EOF ) {
+
+    switch (type) {
+    case NUMBER: 
+      push(atoi(s));
+      break;
+    case '+':
+      push(pop() + pop());
+      break;
+    case '*':
+      push(pop() * pop());
+      break;
+    case '-':
+      op2 = pop();
+      push(pop() - op2); /* push(pop() - pop()) is not what we want; why? */
+      break;
+    case '/': 
+      op2 = pop();
+      if (op2 != 0) {
+        push(pop() / op2);
+      } else {
+        printf("error: division by zero is *undefined* by mathematics\n");
+      }
+      break;
+    case '\n':
+      printf("\t%d\n", pop());
+      break;
+    default:
+      printf("error: unknown operator ``%s''\n", s);
+      break;
+    }
+  }
+  return 0;
+}
+
+O procedimento main primeiro tem as bibliotecas necessarias em especial
+a polonesa.h que da acesso a todos os programas ja feitos, e a
+definição de MAXOP de tamanho 100. O procedimento main é definido pelas
+variaveis type,op2 e o char s[MAXOP] de tamanho MAXOP. Temos que a
+condição do while é que enquanto type ,que é getop de s,for diferente
+de EOF(end of file), o while vai funcionar,dentro do while temos um
+switch case.
+
+Nesse switch que recebe type,tem diferentes cases que vai executar
+comandos diferentes, se nosso type for um NUMBER vamos ter um push da
+variavel s para a pilha. No caso + temos um pop de dois argumentos
+(vão sair da pilha) com o operador + e depois o resultado vai se posto
+na pilha, esse mesmo processo serve para o * a diferença é somente o
+operador ultilizado. Nos cases / e - a ordem dos argumentos importa por
+isso fazemos um pop para uma variavel op2, e no caso da divisão o op2
+tem que ser diferente de 0, se for é feita a operação com pop e op2
+(o ultimo da pilha),no caso da subtração não é necessario op2 ser
+diferente de 0.temos um case de ser um espaço em branco que retorna um
+tab com um pop e por último temos o caso não listado que vai retornar
+um print de error.
+
+(*)conclusão
+
+A melhor forma de entendimento do programa é da forma que foi feita
+nesse texto, deixando o procedimento main por último ,pois explicando
+os programas que compõe o main antes quando chegamos no main tá tudo
+explicado facilitando o entendimento.

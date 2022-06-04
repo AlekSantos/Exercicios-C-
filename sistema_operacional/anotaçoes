@@ -1,0 +1,234 @@
+Alekssander Santos do Carmo Martins 
+alekssandersantos@gmail.com
+
+===============================================================================================
+O_wRDONLY
+Open for reading only.
+
+O_TRUNC
+If the file exists and is a regular file, and the file is successfully
+opened O_RDWR or O_WRONLY, its length is truncated to 0 and the mode
+and owner are unchanged. It will have no effect on FIFO special files
+or terminal device files. Its effect on other file types is
+implementation-dependent. The result of using O_TRUNC with O_RDONLY is
+undefined.
+
+VALOR DE RETORNO
+Após a conclusão bem-sucedida, a função abrirá o arquivo e retornará um
+número inteiro não negativo representando o descritor de arquivo não
+utilizado de menor número. Caso contrário, -1 é retornado e errno é
+definido para indicar o erro. Nenhum arquivo será criado ou modificado
+se a função retornar -1.
+
+==================================================================================================
+
+Tarefa 1 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+const char *str = "agua de coco com queijo";
+int main() {
+
+    int fd = open("open-hello2.txt", O_WRONLY | O_TRUNC| O_CREAT);
+    if (fd < 0) {
+        perror("open");
+        return 1;
+    }
+    write(fd, str, strlen(str));
+    sleep(60);
+}
+
+
+
+Tarefa 2
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+   FILE * fp;
+   fp = fopen ("file.txt", "w+");
+
+
+   fprintf(fp, "%s %s %s %d", "We", "are", "in", 2022);
+   sleep(60);
+   fclose(fp);
+   return(0);
+}
+
+
+Tarefa 3 
+
+Na primeira tarefa quando ultilizamos open para abrir/criar um arquivo,
+quando o arquivo ja existe os bits dele são zerados deixando em branco
+até o novo texto ser escrito, ultilizamos na tarefa o write para
+escrever com ele o texto é escrito na execução e quando o sleep começa
+a funcionar nada acontece, pois o texto é escrito antes do sleep entrar
+em ação.No segundo ultilizando fopen e fprintf, o fopen tambem
+cria/abre um arquivo e zera os bits dele, mas aqui começa a diferença
+ultilizando o fprintf em conjunto com o fopen o texto escrito só vai
+ser realmente escrito após o tempo do sleep acabar,ou seja a diferença
+é que no primeiro o texto é escrito no txt antes do sleep e no segundo
+após a execução do sleep. 
+
+Tarefa 4
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+   FILE * fp;
+   fp = fopen ("file.txt", "w+");
+
+
+   fprintf(fp, "%s %s %s %d", "We", "are", "in", 202222);
+   sleep(60);
+   fclose(fp);
+   return(0);
+}
+
+Matando o programa o resultado final é o arquivo em branco,pois quando
+executado ele apaga o que ja estiver no arquivo para escrever algo novo
+que ocorre logo após o termino do sleep mas como matamos o programa
+durante o sleep, o fprintf não consegue escrever o texto no arquivo.
+Isso ocorre pois o fprintf escreve após a execução do programa
+acabar,como o programa "é morto" durante o processo do sleep,o programa
+não consegue escrever o texto no arquivo.
+
+
+Tarefa 5
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+  pid_t r = fork();
+  if (r < 0) { perror("fork"); exit(1); }
+  if (r == 0) {
+   printf("sou o filho\n");
+   sleep(60);
+   exit(0);
+  }
+  printf("sou o pai\n");
+  sleep(60);
+  return 0;
+}
+
+A coluna PID é o ID do processo que você precisa fornecer ao comando
+kill.
+
+O PPID é o ID do processo pai.
+
+O processo pai tem um PPID de um processo do próprio sistema e o PID é o
+número do processo que o Pai se encontra, ou seja esse numero é o
+endereço do pai que pode ser fornecido para  usar o "kill" nesse
+processo. O processo filho tem como o PPID o endereço PID do pai, ou
+seja o enredeço PPID do filho é o endereço do pai(PID), o processo PID
+é o numero do processo filho ou seja o numero do endereço onde se
+encontra o filho,esse número é usado para matar("kill") o filho.
+
+Tarefa 6
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <math.h>
+#include <time.h>
+
+
+int main(int argc, char *argv[]) {
+  unsigned long N = 1763; // o composto que queremos fatorar
+  int  status; 
+  pid_t r = fork();
+  if (r < 0) { perror("fork"); exit(1); }
+
+  if (r == 0) {
+   printf("processo-filho: rodando...\n");
+   time_t t = time(NULL);
+   if (0 == t % 2) {
+      for (int i = 2; i < sqrt(N); ++i) {
+         if (0 == N % i) {
+         printf("processo-filho: fator encontrado\n");
+         exit(i);
+         }
+      }
+   }
+   else {
+      for (int i = N - 1; i >= 2; --i) {
+         if (0 == N % i) {
+         printf("processo-filho: fator encontrado\n");
+         exit(i);
+         }
+      }
+   }
+   printf("processo-filho: fator não encontrado\n");
+   exit(1); // processo-filho morre aqui de qualquer forma
+   } 
+   
+  if(wait(&status) != r){
+   exit(1);}
+  printf("processo-pai: fim\n");
+  return 0;
+}
+
+Primeiro adicionamos um int chamdo status que vamos ultilizar para fazer
+o programa pai aguardar o processo filho,iremos ver isso depois,a
+primeira chamado do sistema é a do fork que vai criar um novo processo
+(filho) baseado no processo pai. O proxima chamada do sistema é o time
+da biblioteca time.h, segundo a descrição da função :
+time(NULL) returns the number of seconds elapsed since 00:00:00 hours, GMT
+(Greenwich Mean Time), January 1, 1970.No nosso codigo esse valor é
+armazenado na variavel t.
+
+A ultima system call é a do wait que faz nosso processo pai aguardar o
+nosso processo filho para morrer.ele é feito de forma simples se o
+endereço(de memoria) de status for diferente de r é chamado um exit
+após isso vem o printf que fala que o processo pai morreu.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,165 @@
+(*) Introdução
+
+Essa tarefa faz referência ao programa rationals.c, que você encontra
+no pacote
+
+  http://c.antartida.xyz/pkg/struct-0.1.tar.gz
+
+Antes de abordar essa tarefa, você deve assistir à aula /struct.txt/.
+O propósito desta tarefa é dois: (1) praticar o uso de estruturas em
+C, mas muito mais importante é a oportunidade de (2) estudar
+verdadeiramente a aritmética dos números racionais.
+
+(*) Os números racionais
+
+Os números racionais *não* são as frações porque, por exemplo, pi/2 é
+uma fração, mas não é um número racional.
+
+Definição. Um número racional é um par (p, q) de dois números
+/inteiros/ p e q tal que q =/= 0.
+
+Exemplos.  Por exemplo, o número 1/2 pode ser representado pelo par
+(1, 2), assim como 2/4 pode ser representado por (2, 4).  Isso ilustra
+o fato de que há mais de uma forma de representar o mesmo número
+racional.
+
+As estruturas de C podem nos dar um tipo /rational/.  Observe o
+programa rational.c.  Ele implementa um procedimento 
+
+  struct rational mul(struct rational r1, struct rational r2)
+
+que multiplica dois racionais, embora não reduza o racional resultante
+a seus termos mínimos.  (Reduzi-lo requer conhecimento matemático,
+como computar o maior divisor comum entre dois números naturais.)
+
+(*) A representação de um número racional
+
+Considerando a representação de um número racional, uma estrutura
+capaz de implementar essa representação seria
+
+  struct rational {
+    int num; 
+    int den;
+  };
+
+que você encontra em rationals.c
+
+(*) Suas tarefas de implementação
+
+Implemente (1) uma operação unária
+
+  struct rational inv(struct rational r)
+
+que compute o inverso multiplicativo de um racional, ou seja, o
+racional inv(r) tal que r * inv(r) == 1.  
+
+Com inv() fica fácil implementar (2) a divisão
+
+  struct rational div(struct rational r1, struct rational r2).
+
+A implementação mais elaborada é (3) da adição de racionais
+
+  struct rational add(struct rational r1, struct rational r2),
+
+mas, com ela implementada, a implementação (4) da subtração
+
+  struct rational sub(struct rational r1, struct rational r2),
+
+é fácil.
+
+(*) Sugestões, elementos opcionais
+
+Mais legal é se você puder receber os racionais pela linha de comando.
+Fica mais fácil testar seus procedimentos.  Aliás, você poderia
+redigir um script /shell/ pra testar seu programa de forma automática,
+o que lhe proporcionará muito mais conforto: qualquer modificação no
+seu programa, você rapidamente verifica se tudo que você tinha feito
+corretamente antes ainda está correto (depois da última modificação).
+Lembra do tests-expr.sh?  É a ideia; é a sugestão.
+
+Que interface oferecer ao usuário?  Você pode fazer algo como
+
+%./rationals 1 2 + 1 2
+1/1
+
+%./rationals 1 2 / 1 4
+3/4
+
+%./rationals 1 2 - 1 2
+0/1
+
+%./rationals 1 2 / 1 2
+1/1
+
+%./rationals 1 2 * 1 2
+1/4
+
+Super simples.  São só ideias.  Só sugestões.  (Seu programa não
+precisa se chamar rationals.exe.  Chame do que quiser --- como
+rat.exe, rac.exe, r.exe ou qualquer coisa que lhe agradar.)
+
+(*) Sua tarefa de redação
+
+Sua tarefa de redação é mostrar que você compreende essa aritmética de
+números racionais.  Você deve explicar as estratégias dos
+procedimentos 1--4, ou seja, por que a adição de racionais é como é,
+por que a multiplicação é como é, por que a divisão é como é.  Observe
+que a implementação é trivial, mas a estratégia em si pode ser difícil
+de explicar verdadeiramente.  Não estamos interessados em saber cada
+passo da estratégia.  O que desejamos saber é /por que/ os
+procedimentos são como são.  Em outras palavras, mostre que você sabe
+inventar os procedimentos e não meramente copiá-los de uma fonte.
+
+(*) A oportunidade
+
+Não estamos num curso sobre a teoria dos números, mas é um curso sobre
+programação de computadores.  O computador é uma ferramenta
+excepcionalmente interessante pra nos mostrar o quão superficial é o
+nosso conhecimento científico, quando é o caso.  O computador só
+caminha com passos muito curtos.  Se houver qualquer passo que não
+saibamos descrever por via dos passos curtos que o computador sabe
+executar, então o computador nos mostrará essa falta de conhecimento
+científico com muita clareza.  É, portanto, uma oportunidade de
+investigar a possível lacuna de conhecimento num tema que praticamos
+há pelo menos uma década.
+
+Até chegarmos à universidade, passamos por aproximadamente 15 anos no
+colégio --- jardim 1, 2, 3, primeiro ano, segundo ano, ..., nono ano e
+mais três anos de ensino médio.  Aritmética já começa a ser lecionada
+pelo menos no jardim 3.  Depois de tantos anos na escola adicionando,
+multiplicando e dividindo, podemos dizer que dominamos, compreendemos
+esses procedimentos?
+
+  Depois de vinte anos na escola
+  Não é difícil aprender
+  [...]
+  Vamos fazer nosso dever-de-casa
+  E aí então, vocês vão ver
+    -- ``Geração Coca-Cola'', Legião Urbana, 1985.
+
+Por exemplo, você pode ensinar a alguém que para adicionar a/b + c/d,
+basta computar
+
+  a * [mmc(b, d) / b] + c * [mmc(b, d) / d]
+  -----------------------------------------.
+                mmc(b, d)
+
+Isso ensina à pessoa como se adiciona números racionais?  É o que
+desejamos chamar de /saber/?
+
+Vejamos outras possibilidades.  Talvez você possa dizer que para
+adicionar o racional a/b com c/d, basta somar a*d com c*b e usar o
+denominador b*d.  Considere perguntas como --- por que eu
+multiplicaria /a/ por d?  Não seria melhor multiplicar /a/ pelo 
+log de d na base b?  Uma fórmula é um procedimento.  Cada passo num
+procedimento algorítmico tem o propósito de chegar ao resultado
+desejado.  Computar o log de d na base b em adição de racionais não
+nos leva ao resultado desejado e, por isso, não é o que fazemos.  Pra
+explicar por que um passo nos leva ao resultado desejado, é preciso
+saber com muita clareza qual é o resultado desejado e de onde estamos
+partindo.  Na adição de a/b com c/d, qual é o resultado desejado?
+Esse resultado é certamente um número racional que expresse a soma
+dessas quantidades a/b e c/d, mas que quantidade são essas exatamente
+e o que seria a soma delas?  Onde estamos e aonde queremos chegar?  Por
+que não podemos simplesmente computar (a + c) / (b + d)?  Por que esse
+não seria o resultado desejado?

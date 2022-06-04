@@ -1,0 +1,8 @@
+default: truques f2c f2c-constants \
+  copy1 copy2 count-c \
+  count-lines count-words count-digits
+
+truques: truques.o quantos.o
+
+clean:
+	rm -f *.exe *.o *~

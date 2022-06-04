@@ -1,0 +1,111 @@
+Daniel Bastos
+danielbastos@ic.ufrj.br
+
+(*) Introdução
+
+Um colunista de revista ou jornal precisa respeitar um número máximo de
+palavras para não exceder o espaço que lhe foi alocado numa página.  O
+programa que estudamos aqui serve para contar o número de palavras
+contidas num arquivo-texto qualquer.  (Aproveitamos e contamos também o
+que acontece  número de linhas e o número de caracteres.)
+
+Precisamos definir o que é uma palavra.  Sendo esta nossa versão 0.1,
+começaremos com uma definição de implementação fácil.
+
+Definição.  Uma /palavra/ é qualquer sequência de caracteres que não
+possua um caractere de espaço.  Os caracteres de espaço são ' ', '\n'
+ou '\t', isto é, espaço, quebra-de-linha ou tabulação.
+
+(*) Como usar o programa
+
+Usamos o programa da forma típica UNIX, ou seja, usando o /shell/ para
+preparar a entrada do programa.  Por exemplo,
+
+%./count-words.exe < /etc/services
+285 1251 17463
+
+Outra possibilidade é encanar texto à entrada padrão do count-words:
+
+%echo 'banana ! @ uva' | ./count-words.exe
+1 4 15
+
+(*) A estratégia e sua implementação
+
+O problema menos fácil aqui é saber quando uma palavra começa e quando
+ela termina porque nosso /modus operandi/ é ler o arquivo caractere a
+caractere.  É fato que se um caractere não for de espaço, então
+estamos começando a encontrar uma palavra ou talvez estejamos no meio
+de uma palavra.  Saberemos que a palavra terminou quando encontrarmos
+um caractere de espaço.
+
+A estratégia é varrer o arquivo byte a byte, isto é, caractere a
+caractere, e manter uma variável chamada /state/ que nos informa se,
+em determinado momento, estamos dentro ou fora de uma palavra.  (Cada
+caractere do arquivo é parte de uma palavra ou não é.)
+
+Eis o laço principal do programa:
+
+  while ((c = getchar()) != EOF) {
+    [...]
+    if (c == ' ' || c == '\n' || c == '\t')
+      state = OUT;
+    else if (state == OUT) {
+      state = IN;
+      ++nw;
+    }
+  }
+
+Se de repente encontrarmos um caractere de espaço, então estamos fora
+de uma palavra.  Por isso, dizemos ``state = OUT''.  Aliás, é assim
+que inicializamos a variável /state/.  Claro, um arquivo vazio, por
+exemplo, não teria caractere algum para justificar começarmos como
+``state = IN''.
+
+Se de repente encontrarmos um caractere que não é de espaço, então é
+porque estamos vendo o primeiro caractere de uma nova palavra.
+Precisamos então incrementar o contador de palavras --- ++nw.
+
+Agora considere uma palavra com três letras como a palavra ``sim''.
+Ao ler essa palavra, vamos encontrar três caracteres nenhum dos quais
+é de espaço.  Não podemos incrementar /nw/ essas três vezes.  Só
+incrementamos /nw/ quando há mudança de estado.  Mudança de estado só
+ocorre quando state == OUT e encontramos um novo caractere que não é
+de espaço.
+
+(*) A condição do laço while
+
+Para o laço-while funcionar, precisamos colocar os parênteses em ``c =
+getchar()'' porque a precedência do operador ``='' é menor que a do
+operador ``!=''.  Sem eles, teríamos efetivamente
+
+  c = (getchar() != EOF)
+
+e assim os únicos ``caracteres'' que leríamos seriam o número 1 ou 0
+--- que seriam os resultados da comparação.  Como consequência,
+qualquer arquivo não vazio teria (incorretamente) uma única palavra e
+zero linhas.  Veja:
+
+%make count-words
+gcc -Wall -c count-words.c
+count-words.c: In function ‘main’:
+count-words.c:11:11: warning: suggest parentheses [...]
+   11 |   while ( c = (getchar() != EOF)) {
+      |           ^
+cc   count-words.o   -o count-words
+%./count-words.exe < /etc/services
+0 1 17463
+
+(*) Melhores definições de ``palavra''
+
+Um dos problemas como esse programa é que a definição de palavra é
+simples demais.  Por exemplo, um caractere de acentuação solto num
+arquivo conta como um palavra:
+
+%echo 'banana ! @ uva' | ./count-words.exe
+1 4 15
+
+O /header file/ <ctype.h> possui macros que nos permitem detectar
+facilmente se um caractere é, por exemplo, alfanumérico --- veja ``man
+isalnum''.  Podemos definir que uma palavra é uma sequência de
+caracteres alfanuméricos e assim decretar que estamos fora de uma
+palavra sempre que isalnum(c) não for verdadeiro.

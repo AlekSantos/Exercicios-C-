@@ -1,0 +1,233 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*) Introdução 
+
+O programa rat é uma calculadora de números racionais que realiza 5
+tipos de operação, a multiplicação,divisão, soma e subtração de números
+racionais e a última operação mostra o valor do inverso multiplicativo
+da entrada.
+
+(*)Como ultilizar o programa 
+
+programa deve ser ultilizado dessa forma :
+
+./rat num den operador num den 
+
+Dessa forma é possivel escolher os
+números desejados para primeira fração (antes do operador) e para
+segunda fração(depois do operador).
+
+(*) Programa
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct rational {
+  int num;
+  int den; /* Notice den should never be zero because there's no such
+              rational number with [den]ominator zero. */
+};
+
+struct rational mul(struct rational r1, struct rational r2) {
+  struct rational ret;
+  ret.num = r1.num * r2.num;
+  ret.den = r1.den * r2.den;
+  return ret;
+}
+struct rational divi(struct rational r1, struct rational r2) {
+  struct rational ret;
+  ret.num = r1.num * r2.den;
+  ret.den = r1.den * r2.num;
+  return ret;
+}
+struct rational inv(struct rational r){
+  struct rational ret;
+  ret.num= r.den;
+  ret.den=r.num;
+  return ret;
+}  
+
+int mmc(struct rational r1,struct rational  r2){
+
+  int den1; den1=r1.den;
+  int den2; den2=r2.den;
+  int cden1; cden1=r1.den;
+  int cden2; cden2=r2.den;
+
+  while (den1 !=den2){
+
+    if (den1 > den2){
+      den2=den2 + cden2;
+    }
+    if (den2 > den1){
+      den1=den1 + cden1;
+    }
+    
+  }
+  return den1;
+}
+struct rational soma(struct rational r1,struct rational r2,int m){
+  struct rational ret;
+  ret.num= (r1.num *(m/r1.den)) + (r2.num *(m/r2.den)); 
+  ret.den=m;
+  
+  return ret;
+}  
+struct rational sub(struct rational r1,struct rational r2,int m){
+  struct rational ret;
+  ret.num= (r1.num *(m/r1.den)) - (r2.num *(m/r2.den)); 
+  ret.den=m;
+  
+  return ret;
+}  
+
+
+int main(int argc, char *argv[]) {
+
+
+  struct rational a;
+  struct rational b;
+  int operator;
+  operator = argv[3][0];
+
+    switch(operator) {
+
+      case 'x':
+        
+        a.num = atoi(argv[1]); a.den =atoi(argv[2]) ; /* 4/3 */
+        b.num = atoi(argv[4]); b.den = atoi(argv[5]); /* 3/4 */
+
+        struct rational c; c = mul(a, b);
+
+        printf("%d/%d * %d/%d = %d/%d\n  \n", a.num, a.den, b.num, b.den, c.num, c.den);
+
+        break;
+
+      case '/':
+
+        a.num = atoi(argv[1]); a.den =atoi(argv[2]) ; 
+        b.num = atoi(argv[4]); b.den = atoi(argv[5]);
+        struct rational d; 
+        d = divi(a, b);
+
+        printf("%d/%d / %d/%d = %d/%d\n  \n", a.num, a.den, b.num, b.den, d.num, d.den);
+
+        break;
+      case '.':
+
+      a.num = atoi(argv[1]); a.den =atoi(argv[2]) ; 
+      b.num = 0; b.den= 0;
+      struct rational e;
+      e = inv(a);
+
+      printf("%d/%d * %d/%d = 1\n",a.num,a.den,e.num,e.den);
+
+      case '+':
+        a.num = atoi(argv[1]); a.den=atoi(argv[2]) ; 
+        b.num = atoi(argv[4]); b.den = atoi(argv[5]);
+        struct rational h;
+        
+        int mc;
+        mc = mmc(a,b);
+        h = soma(a, b,mc);
+        
+
+        printf("%d/%d + %d/%d = %d/%d \n",a.num,a.den,b.num,b.den,h.num,h.den);
+        break;
+
+      case '-':
+        a.num = atoi(argv[1]); a.den=atoi(argv[2]) ; 
+        b.num = atoi(argv[4]); b.den = atoi(argv[5]);
+        struct rational p;
+        
+        int mcc;
+        mcc = mmc(a,b);
+        p = sub(a, b,mcc);
+        
+
+        printf("%d/%d - %d/%d = %d/%d \n",a.num,a.den,b.num,b.den,p.num,p.den);
+        break;  
+      }
+  
+  return 0;
+}
+
+(*) implementação da divisão
+
+A forma mais conhecida de se realizar uma divisão de frações é por uma
+regra muito conhecida que é repete a primeira fração e multiplica pelo
+inverso da segunda ,ou seja, se temos a divisão das seguintes frações 
+1/2 / 3/5 
+seguindo nossa conhecida regra temos que iremos repetir a primeira fração e multiplicar
+pelo inverso da segunda, ou seja ficamos com :
+1/2 * 5/3 = 5/6 .
+
+A partir desse conhecimento aproveitei o codigo do calculo da
+multiplicação de frações para realizar essa conta o unico poblema foi
+inverter a segunda fração, eu fiz isso no proprio codigo , ou seja :
+  ret.num = r1.num * r2.den;
+  ret.den = r1.den * r2.num;
+
+Na propria função defini que o valor da fração resolvida vai ser a
+multiplicação do numerador da primeira fraçao(parte de cima da
+primeira) pelo denominador da segunda fração(parte de baixo da segunda
+fração) esse valor vai ser nosso numerador da resposta e o denomidador
+da nossa resposta vai ser a multiplicação do denominador do primeiro
+(parte de baixo do primeiro) pelo numerador do segundo (parte de cima
+do segundo),Igual demostra o código.
+
+
+
+(*) implementação do inverso multiplicativo
+
+Primeiro coloquei que pra chamar a função do inverso multiplicativo era
+necessario colocar uma fração e o operador escolhido foi o . , com isso
+conseguimos chamar a função, para realizar o inverso multiplicativo eu
+fiz uma função que recebe um struct rational como argumento e retorna
+um struct rational, esse struct rational retornado é com os valores
+invertidos ou seja, onde era 4/5 vira 5/4 ou seja fazemos com que o
+numerador vire denominador e que o denominador vire o numerador para
+que multiplicando isso de 1.
+4/5 * 5/4 = 1
+
+
+(*) implementação do mmc
+
+Para implementar a soma,o primeiro passo tomado foi calcular o mmc das
+duas frações,para isso eu fiz uma função que recebe dois structs
+rationals e pega seus denominadores e faz uma copia deles, ou seja
+temos 4 termos, 2 sendo do nosso primeiro denominador, e 2 sendo do
+nosso segundo denominador, pq dois de cada ? eu fiz uma função que roda
+vai rodar enquanto o while for verdadeiro ou seja enquanto denominador
+do primeiro for diferente do denomidador do segundo,para que esse valor
+tentasse se igular eu fiz dois ifs um considerando que den1 é maior que
+den2 com isso eu acrescento den2 com ele mesmo ou seja se o valor de
+den2 era 2 vai ser 4 agora,e a mesma coisa para se den2 for maior que
+den1, quando esses den1 e den2 tiverem valores iguais o loop while vai
+ser encerrado e é retornado um valor inteiro que é o valor de den1
+(é igual ao valor de den2) esse valor de den1 é nosso mmc.
+
+(*) implementação da soma
+
+Com a implementação do mmc é facil calcular a soma de frações minha
+estrategia foi ultilizar a famosa regra de soma de frações ou seja
+pegamos o valor do mmc encontrado e comparamos ele com nosso
+denominador original e analisamos quantas vezes esse nosso denominador
+foi multiplicado, com esse valor multiplicamos o numerador
+para "igualar" ao mesmo denominador e continuar o mesmo valor, um
+exemplo é que 2/4 de uma barra de chocolate é a mesma coisa que 1/2 de
+barra.Finalizando o que fazemos é colocar o mesmo denominador(mmc) e
+avaliar esse mmc sobre nosso denominador original encontrando essa
+variação(a divisão do mmc pelo valor original do denominador)
+multiplicamos ela pelo nosso numerador , agora com as duas frações
+ajustadas realizamos a soma dessas duas fraçoes. Nossa estrategia é
+reformular essa fração sobre um denominador comum e somar elas.
+
+
+(*) implementação da subtração
+
+A subtração ultiliza a mesma tecnica que a soma a unica diferença é que
+após mudarmos nossas frações para um denominador comum nós subtraimos
+elas.
+

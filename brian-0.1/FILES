@@ -1,0 +1,12 @@
+FILES
+Makefile
+copy1.c
+copy2.c
+count-c.c
+count-digits.c
+count-lines.c
+count-words.c
+eof.c
+f2c*.c
+quantos.c
+truques.c

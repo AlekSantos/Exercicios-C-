@@ -1,0 +1,357 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*)Introdução
+
+O programa expr realiza contas simples como subtração,adição, encontrar
+o resto da divisão além disso foi iplementado as contas de
+multiplicação,divisão e potenciação.
+
+
+(*)Como usar o programa
+
+O programa deve ser ultilizado dessa forma :
+./expr op1 operador op2 Dessa forma é possivel escolher os numeros
+desejados(op1 e op2) e a operaçao ultilizada,Para mais informações
+digite ./expr . 
+Nesse programa nossos numeros podem ir até  18446744073709551615.
+Nosso programa não suporta números racionais nem negativos.
+
+(*) Programa
+
+#include <stdio.h>
+#include <inttypes.h> /* for PRIu64 and uint64_t */
+#include <limits.h> /* for UINT64_MAX */
+#include <stdlib.h> /* for exit() */
+
+#define SUPPORTED "+ - % x ^ / %"
+
+void usage(int e) {
+  printf("Usage: expr operand-1 operator operand-2\n");
+  printf(" where operator must be exactly one of " SUPPORTED ".\n\n");
+
+  printf("We do not support negative or rational numbers.\n\n");
+  printf("But we do not suffer from integer overflow and\n");
+  printf(" our numbers can go up to %" PRIuMAX ".\n\n", UINT64_MAX);
+
+  printf("In other words, this program may have some limitations,\n"
+         "like any other program, but it has no programming flaws.\n\n");
+
+  printf("(*) C99, section 6.2.5.9\n\n"
+      "``A computation involving unsigned operands can never overflow,\n"
+      "because a result that cannot be represented by the resulting\n"
+      "unsigned integer type is reduced modulo the number that is one\n"
+      "greater than the largest value that can be represented by the\n"
+      "resulting type.''\n\n");
+
+  exit(e);
+}
+
+uint64_t array_to_uint64(char *s, uint64_t *u) 
+{
+  uint64_t pos;
+  uint64_t r;
+  uint64_t c;
+
+  pos = 0; r = 0;
+
+  for ( ;; ) {
+    c = (uint64_t) (unsigned char) (s[pos] - '0');
+    if (c < 10) {
+      if( ((UINT64_MAX - c) / 10) >= r) 
+        r = r * 10 + c;
+      else return -1; /* doesn't fit */
+      ++pos; continue;
+    }
+    break;
+  }
+
+  *u = r;
+  return pos;
+}
+
+uint64_t power(uint64_t base, uint64_t n) {
+  uint64_t p; p = 1;
+  for (uint64_t i = 1; i <= n; ++i)
+    p = p * base;
+  return p;
+}
+
+int main(int argc, char *argv[]) { /* a prototype of expr(1) */
+  /* 
+     We only support binary operands, that is, every command-line must
+     be composed of 4 arguments as in
+
+         expr op1 operator op2
+         
+    where operator must be exactly one of SUPPORTED operators.
+  */
+  if (argc <= 1) usage(0);
+  if (argc <  4) usage(1);
+  if (argc >  4) usage(2);
+
+  uint64_t op1;
+  uint64_t op2;
+  uint64_t r; 
+  int okay;
+
+  okay = array_to_uint64(argv[1], &op1);
+  if (okay == -1) {
+    printf("expr: %s is too large\n", argv[1]);
+    exit(1);
+  }
+  if (okay == 0) {
+    printf("expr: %s is an invalid natural number\n", argv[1]);
+    exit(1);
+  }
+
+  okay = array_to_uint64(argv[3], &op2);
+  if (okay < 0) {
+    printf("expr: %s is too large\n", argv[2]);
+    exit(1);
+  }
+  if (okay == 0) {
+    printf("expr: %s is an invalid natural number\n", argv[2]);
+    exit(1);
+  }
+
+  int operator; 
+  operator = argv[2][0];
+
+  /* printf("op1 = %lu\n", op1); */
+  /* printf("op2 = %lu\n", op2); */
+
+  switch(operator) {
+
+  case '-':
+    if (op1 < op2) {
+      printf("expr: illegal subtraction\n");
+      exit(101);
+    }
+    r = op1 - op2;
+    printf("%" PRIu64 "\n", r);
+    break;
+
+  case '+':
+    r = op1 + op2;
+    printf("%" PRIu64 "\n", r);
+    break;
+
+  case '%':
+    r = op1 % op2;
+    printf("%" PRIu64 "\n", r);
+    break;
+  case '^':
+    r= power(op1,op2);
+    printf("%" PRIu64 "\n",r);
+    break; 
+  case '/':
+    if (op1 < op2) {
+      printf("expr: illegal division\n");
+      exit(111);
+    }
+    r = op1 / op2;
+    printf("%" PRIu64 "\n", r);
+    break;
+  case 'x' :
+    r= op1 * op2;
+    printf("%" PRIu64 "\n",r);
+    break; 
+
+
+
+  default:
+    printf("expr: unknown operator ``%c''\n", operator);
+    exit(101);
+    break;
+  }
+
+  return 0;
+}
+uint64_t array_to_uint64_unchecked(char *s, uint64_t *u) {
+  uint64_t pos;
+  uint64_t r;
+  uint64_t c;
+
+  pos = 0; r = 0;
+
+  for ( ;; ) {
+    c = (uint64_t) (s[pos] - '0');
+    if (c < 10) {
+      r = r * 10 + c; ++pos; continue;
+    }
+
+    break;
+  }
+
+  *u = r;
+  return pos;
+}
+
+*** Observação do programa ***
+uint64_t = unsigned integer type with width of exactly 64 bits 
+PRIu é como deve ser chamado uint64_t em um printf por exemplo 
+UINT64_MAX é maximum value of an object of type 64
+
+(*) implementação da multiplicação 
+
+A implementação da multiplicação foi feita abrindo mais um case no nosso
+switch(operator), ou seja no nosso caso depende do nosso operador. 
+  
+  case 'x' :
+    r= op1 * op2;
+    printf("%" PRIu64 "\n",r);
+    break; 
+
+No nosso programa o operador escolhido para representar a multiplicação
+foi o x com isso abrindo o case, definimos que o r vai ser igual ao
+op1 * op2 após isso temos um printf que vai escrever na tela o
+resultado de r e depois encerramos nosso case com o break.
+
+(*) implementação da divisão
+
+A implementação da divisão foi feita abrindo mais um case no nosso
+switch(operator), ou seja no nosso caso depende do nosso operador.
+
+case '/':
+    if (op1 < op2) {
+      printf("expr: illegal division\n");
+      exit(111);
+    }
+    r = op1 / op2;
+    printf("%" PRIu64 "\n", r);
+    break;
+
+No nosso programa o operador escolhido para representar a divisão foi
+o / com isso abrindo o case definimos atraves de um if que o op1 não
+pode ser menor que op2 se isso ocorrer aparece na tela atraves de um
+printf que temos uma divisão ilegal pois nosso programa nao foi feito
+pra suportar esse tipo de operação depois disso temos um exit(111) que
+vai chamar nossa "documentção" do programa que pode ser acessada
+ultilizando ./expr . voltando nossa atenção para operação em si temos
+que r é a op1 dividida pela op2,depois temos um printf dizendo esse
+valor de r para o usuario e finalmente fechamos nosso case com um
+break.
+
+
+(*) implementação da  exponenciação(multiplicaçao repetidada)
+
+A implementação da potenciação foi feita abrindo mais um case no nosso
+switch(operator), ou seja no nosso caso depende do nosso operador.
+
+case '^':
+    r= power(op1,op2);
+    printf("%" PRIu64 "\n",r);
+    break; 
+
+No nosso programa o operador escolhido para representar a exponenciação
+foi o ^ atraves dele abrimos nosso case em que nosso r é o resultado de
+power que recebe o op1 e op2. 
+r= power(op1,op2); 
+Após isso é retornado o resultado para o usuario atraves de um printf
+que mostra o valor de r, após isso nosso case é encerrado atraves do
+break.
+Power é um procedimento iplementado no nosso programa que recebe
+dois "argumentos" e retorna a expodenciação dele exemplo se temos power
+(2,3) é a mesma coisa que 2 * 2 * 2 = 8.
+Fazemos isso atraves de :
+uint64_t power(uint64_t base, uint64_t n) {
+  uint64_t p; p = 1;
+  for (uint64_t i = 1; i <= n; ++i)
+    p = p * base;
+  return p;
+}
+
+Nosso power recebe dois "argumentos" o primeiro a base (op1) e o segundo
+o n (op2),dentro do power definimos um p e que esse p se inicia em
+um,em seguida temos um for em que dentro dele definimos um 1 iniando em
+1 e definimos nossa condição que para o funcionamento do for o i tem
+que ser menor igual ao valor de n(op2), após cada ciclo do for
+acrecentamos 1 no nosso i (++i).Dentro do for temos que p vai ser igual
+a p * base. fechando o ciclo do for retornamos o valor de p que é o
+resultado na nossa potenciação.
+
+(*) Entendendo array_to_uint64_unchecked 
+Recebe um array com posição e
+transforma essa string em um inteiro, alem disso retorna o valor de pos
+que nos ajuda a identificar erros dentro da funçao principal com o okay
+exemplo:
+okay = array_to_uint64(argv[1], &op1);
+  if (okay == -1) {
+    printf("expr: %s is too large\n", argv[1]);
+    exit(1);
+  }
+  if (okay == 0) {
+    printf("expr: %s is an invalid natural number\n", argv[1]);
+    exit(1);
+  }
+ou seja se pos retornar 0 ou -1 aparece uma mensagem mostrando erro 
+e chamamos exit(1).
+
+uint64_t array_to_uint64_unchecked(char *s, uint64_t *u) {
+  uint64_t pos;
+  uint64_t r;
+  uint64_t c;
+
+  pos = 0; r = 0;
+
+  for ( ;; ) {
+    c = (uint64_t) (s[pos] - '0');
+    if (c < 10) {
+      r = r * 10 + c; ++pos; continue;
+    }
+
+    break;
+  }
+
+  *u = r;
+  return pos;
+}
+
+esse array é um tipo uint64_t , que recebe como argumento um char s e
+temos uint64_t que é o tipo que vai ser nosso *u. definimos o tipo
+uint64_t de pos, r e c . e tambem definimos que pos e r é 0 . temos um
+for com loop infinito que define o tipo de c como uint64_t que o valor
+de c vai ser igual a s[pos] que pos começa em 0 menos '0' que vimos que
+significa 48 , ou seja isso transforma esse s[pos] em inteiro, depois
+temos um if analisando se esse c é menor que 10 e se for entra na linha
+que define r essa linha que vai montar nossa numero inteiro, começando
+em r como 0 , fazendo as contas vamos ter que no primeiro loop r = c,
+no segundo r vai ser igual c * 10 + c ou seja se queremos transforma o
+15 no primeiro loop r vai ser 1 , no segundo temos que 1 * 10 + c
+(nesse caso 5) = 10 + 5 = 15 , assim conseguimos transformar qualquer
+inteiro de forma correta. Quando o 15 terminar fechamos o loop e
+definimos que nosso argumento de entrada *u vai ser igual ao valor de r
+e retornamos a pos que vai nos ajudar a identificar alguns erros como
+foi mostrado a cima .
+
+(*) A diferença entre array_to_uint64_unchecked e array_to_uint64
+
+uint64_t array_to_uint64(char *s, uint64_t *u) 
+{
+  uint64_t pos;
+  uint64_t r;
+  uint64_t c;
+
+  pos = 0; r = 0;
+
+  for ( ;; ) {
+    c = (uint64_t) (unsigned char) (s[pos] - '0');
+    if (c < 10) {
+      if( ((UINT64_MAX - c) / 10) >= r) 
+        r = r * 10 + c;
+      else return -1; /* doesn't fit */
+      ++pos; continue;
+    }
+    break;
+  }
+
+  *u = r;
+  return pos;
+}
+
+A diferença é que no codigo array_to_uint64 é que temos que retorna -1
+se estourarmos o limite o UINT64_MAX,ou seja nao pode ultrapassar
+2^64 , atraves de uma linha de um if adicionado temos que se
+estourarmos esse limite retornamos -1 , que nos ajuda a identificar um
+erro atraves da linha okay no int main.

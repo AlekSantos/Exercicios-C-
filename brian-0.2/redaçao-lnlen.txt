@@ -1,0 +1,130 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*) Introdução 
+
+O programa lnlen le as linhas de entrada e conta elas, o retorno desse
+programa é o numero da linha ,o tamanho da linha e o texto da linha.
+
+(*) Como usar o programa 
+
+O programa pode ser ultilizado de x formas.
+A primeira forma é chamando no shell ./lnlen , e após
+isso escrever o que é desejado e no final usar Ctrl+d para encerrar a
+entrada.      
+A segunda forma é ultilizar a entrada definindo o lnlen, exemplo :
+%echo 'o que se deseja de entrada' | ./lnlen, assim quando der enter ja
+é retornada a saída do programa que é a resposta(esse tipo de
+ultilização do programa é aconselhavel para ser somente 1 linha). 
+A terceira forma é chamar o lnlen ja referenciando o texto que deseja
+analisar exemplo :
+%./lnlen < count-digits.c 
+
+(*) Saída do programa
+
+A saída do nosso programa é definido pelo bloco da funçao principal:
+
+int main(void) {
+  int len; char ln[MAXLINE];
+  for (int i = 1; (len = getln(ln, MAXLINE)) > 0; ++i)
+    printf("%d: %d: %s", i, len, ln);
+  return 0;
+}
+
+Primeiro temos a nossa função principal(int main), após isso definimos
+nossa variavel len(ela vai receber o valor do getln) e também definimos
+nossa variavel char que é o ln. Após isso temos um loop for em que é
+definido um contador i que começa em 1 e cada fez que esse loop é
+executado o i cresce em 1 (1,2,3..) . A condição do nosso loop é que
+nossa variavel len seja maior que 0,ou seja se existir linha o loop
+continua em execução.Nosso len recebe de entrada ln e o valor de
+maxline que é definido junto com a biblioteca, len retorna o valor do
+getln. 
+Dentro do loop temos um printf que retorna o valor de i que
+seria a linha em que se encontra, o valor de len que é o tamanho da
+linha(conseguido pelo getln) e por ultimo retorna ln que é pelo que a
+linha é formada.
+Exemplo :
+ se nossa entrada é %echo 'oi' | ./lnlen , ela retorna :
+ 1: 3: oi
+O 1 é o i , o 3 é o tamanho da linha(len), e o proprio oi é o ln.
+
+Obs: Você provavelmente deve estar se pergutando porque getln(len) tem
+tamanho 3 se oi aparentemente tem tamanho 2 ,isso se deve pelo fato que
+o programa getln a linha é encerrada pelo /0 ficando oi/0, logo tamanho
+3.
+
+(*) Entendendo o programa
+
+Nosso programa está basicamente explicado, o que falta para nosso
+entendimento é "a função" getln, por isso vamos explicar getln aqui.
+
+int getln(char s[], int lim) 
+{
+  /* getln: read a line into s, return length */
+  int c, i;                  // enq n~ é EOF e enq não é newline
+  for (i = 0; i < lim - 1 && (c = getchar()) != EOF && c != '\n'; ++i)
+    s[i] = c; // acumula a ``string''
+  if (c == '\n') {
+    s[i] = c; // coloca a quebra-de-linha em s (ou ficamos sem ela)
+    ++i;
+  }
+  s[i] = '\0'; // ``fecha'' a string --- o que é uma string?
+  return i;    // mostre o desenho de Brian Kernighan da página 31
+}
+
+O getln é essa função definida pelo int que recebe dois termos como
+entrada o char s, e o int lim,transportando para nosso programa
+principal essas entradas seriam ln e o MAXLINE. 
+
+Dentro do getln temos a definição das variaveis c e i.iniciando a função
+em si temos um loop for em que é definido o i=0 e cada vez que esse
+loop for executado i cresce em 1(0,1,2,3...), para explicar a condição
+de funcionamento desse loop precisamos lembrar que a entrada do getln é
+uma linha,logo esse programa conta o tamanho da linha. A condição de
+funcionamento é que o i tem que ser menos que o lim(MAXLINE) e a
+variavel c (recebe o valor de getchar()) tem que ser diferente de EOF
+(end of file) e que c tem que ser diferente de uma quebra de linha
+(\n). Quando se chega em uma quebra de linha mas não é o EOF cai em uma
+condição de if que coloca essa quebra de linha em s(ln) na posição i e
+é acrescentado mais um no valor de i ou seja i cresce em 1,Após isso é
+encerrado o if e temos que :
+s[i] = '\0';
+que é justamente o encerramento da string.
+Após isso temos :
+return i; 
+Quem conta o tamanho da linha é o i, por isso ele é retornado no final.
+
+
+
+
+
+
+(*) Programa completo
+
+#include <stdio.h>
+#define MAXLINE 1000
+
+int getln(char s[], int lim);
+
+int main(void) {
+  int len; char ln[MAXLINE];
+  for (int i = 1; (len = getln(ln, MAXLINE)) > 0; ++i)
+    printf("%d: %d: %s", i, len, ln);
+  return 0;
+}
+
+int getln(char s[], int lim) 
+{
+  /* getln: read a line into s, return length */
+  int c, i;                  // enq n~ é EOF e enq não é newline
+  for (i = 0; i < lim - 1 && (c = getchar()) != EOF && c != '\n'; ++i)
+    s[i] = c; // acumula a ``string''
+  if (c == '\n') {
+    s[i] = c; // coloca a quebra-de-linha em s (ou ficamos sem ela)
+    ++i;
+  }
+  s[i] = '\0'; // ``fecha'' a string --- o que é uma string?
+  return i;    // mostre o desenho de Brian Kernighan da página 31
+}
+

@@ -1,0 +1,232 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+Tarefa 1-Escreva um programa que mostre o tamanho de /union value/ e
+explique(em língua portuguesa) o tamanho que seu programa lhe mostra.
+
+
+#include <stdio.h>
+
+union value {
+  int ival;
+  char *sval;
+};
+
+int main()
+{
+  char *ponteiro;
+  union value r;
+  printf("sizeof(r):\t%d\n", sizeof(r));
+  printf("sizeof(ponteiro):%d",sizeof(ponteiro));
+
+   
+  return 0; 
+} 
+
+Tamanho que union toma é o tamanho da maior variavel declarada na union,
+no nosso caso o char ponteiro que tem tamanho de 8 bits.
+
+
+Tarefa 2-Considere o seguinte programa e responda às perguntas.
+
+
+#include <stdio.h>
+
+union value {
+  int ival;
+  char *sval;
+};
+
+struct record {
+  char *name;
+  int type;
+  union value v;
+};
+
+#define INT 0
+#define STR 1
+
+int main() {
+
+  struct record r;
+  r.name = "Love Story";
+  r.type = INT;
+  r.v.ival = 1970;
+  printf("name = %s, year = %d, size = %ld\n", r.name, r.v.ival, sizeof r.v);
+
+  r.name = "Dr. Jhivago";
+  r.type = STR;
+  r.v.sval = "Omar Sharif";
+  printf("name = %s, star = %s, size = %ld\n", r.name, r.v.sval, sizeof r.v);
+
+  return 0;
+}
+
+
+
+pergunta 1- A /union value/ é uma declaração, definição ou ambos?
+Explique o que no código provê a evidência para sua resposta.  Por
+exemplo, você pode mostrar a diferença entre uma declaração e uma
+definição, se houver.
+
+declaração, pois só declara mas nao aloca um espaço na memoria para essa 
+union declarada.
+
+pergunta 2- Na declaração da estrutura /record/, o membro 
+
+  union value v 
+
+é uma declaração, definição ou ambos?  Há alguma inicialização?
+Explique seu entendimento.
+
+
+declaração, é declarado no struct record  um union value com nome v mas
+como é somente uma declaração e nao aloca espaço na memoria portanto
+não é uma definição.
+
+
+Tarefa 3- Uniões são como arrays ou como estruturas quando passadas a
+procedimentos?  Em outras palavras, elas são copiadas pra dentro do
+procedimento como as estruturas ou decaem para ponteiros como os
+arrays?  Explique o que você pensa e prove sua resposta ao exibir um
+programa que você escreveu e que sabe explicar.
+
+#include <stdio.h>
+
+union coin {
+  int x;
+  int y;
+};
+
+union coin add2(union coin r){
+  union coin rat;
+  rat.x = r.x + 2;
+  
+}
+
+struct point {
+  int x;
+  int y;
+};
+
+struct point add1(struct point p) {
+  struct point ret;
+  ret.x = p.x + 1;
+  ret.y = p.y + 2;
+  return ret;
+}
+
+int main(void) {
+  
+  struct point p;
+  struct point q;
+  union coin r;
+  union coin s;
+  r.x = 10 ; 
+  p.x = 0; p.y = 0;
+  q = add1(p); /* a copy of p is passed to add1() */
+  /* q is totally different from p */
+  s= add2(r);
+
+  printf("p = (%d, %d)\n", p.x, p.y);
+  printf("q = (%d, %d)\n", q.x, q.y);
+  printf("r = (%d)\n", r.x);
+  printf("s = (%d)\n", s.x);
+
+  /*
+    You can see p was not changed by the procedure add1().
+  */
+
+  return 0;
+}
+
+Ultilizei o programa copias.c da aula 6,aula de estruturas, para testar
+se o union funcionaria igual a uma estrutura, e repetindo basicamente
+os processos é possivel observar que um union se comporta da "mesma
+forma " que um struct,Pois quando passado a procedimentos eles são
+copiados para eles e não decaem para ponteiros igual arrays. 
+
+
+
+
+
+
+Tarefa 4-Prove que é possível usar um array de uniões escrevendo um
+programa que ilustre o uso de um array de uniões.
+
+#include <stdio.h>
+
+union value
+{
+    int ival;
+    char *sval;
+};
+
+int main()
+{
+    union value v[11];
+
+    for (int i = 0; i < 11; i++)
+    {
+        if (i < 6)
+            v[i].ival = i;
+        else
+            v[i].sval = "Aprovado";
+    }
+
+    for (int i = 0; i < 11 ; i++)
+    {
+        if (i < 6 )
+            printf("Sua nota foi: %d , você foi reprovado \n", v[i].ival);
+        else
+            printf("Você foi : %s\n", v[i].sval);
+    }
+    return 0;
+}
+
+Podemos ultilizar arrays com unions para criar varios unions do mesmo
+tipo e ultilizamos as propriedades dos arrays para percorrer esses
+unions, um exemplo disso é o for ultilizando o i que vai de 0 até 10
+ele consegue percorrer todos os elementos do union array de 10
+elementos e para cada ciclo do for ele ultiliza uma condição para
+escrever nesse union de array[i] .
+if
+v[i].ival = i; 
+else 
+v[i].sval = "Aprovado"; 
+dependendo da condição.Podemos criar varias
+ultilidades para isso como criar um espaço na memoria fixo que vai
+receber um tipo ou outro dependendo da situação, isso em conjunto com a
+particularidade dos arrays nos ajuda a melhorar nosso programa criando
+simplesmente um array union. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

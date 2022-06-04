@@ -1,0 +1,123 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+Mudança da base 10 para 4
+A metodologia ultilizada para a mudança de base foi a de divisão sucessiva, pegando o número 12345 e dividindo por 4 sucessivamente enquanto anota os restos e o resultado da divisão é dividido até atingir onde não é possivel realizar divisões.
+tomando o número 12345,fazemos:
+12345 / 4 = 3086 resto 1
+3086 / 4 =771 resto 2 
+771 / 4 = 192 resto 3
+192 / 4= 48 resto 0
+48 / 4 = 12 resto 0
+12/ 4  = 3 resto 0
+3/ 4  = 0(não da mais pra dividir) resto 3
+
+ai pegamos os restos da divisão e montamos sendo o ultimo resto o digito
+mais significativo. 
+resulta que o número 12345 na base 10 quando é transformado para a base
+4 fica 3000321 . 
+
+
+
+
+
+
+
+
+
+base 4 para 5 
+
+Para transformar da base 4 para a base 5 é mais complicado, iremos
+analisar  o número encontrado antes que é o 3000321 que é a mesma coisa
+que escrever :
+3* 4 **6 + 0* 4 **5 + 0* 4 **4 + 0* 4 **3 + 3* 4 **2 + 2* 4 **1 + 1 * 4**0 = 3000321
+
+com isso juntamos em um denomidador comum 4 ficando =
+(3* 4**5 + 3* 4 + 2 ) 4  + 1 = 3000321
+
+pegando isso e juntando temos 
+(3*4*4*4*4*4 + 12 + 2) 4 + 1 =3000321 
+ 12 na base 5 é 22 
+(3*4*4*4*4*4 + 22 + 2) 4 + 1 o número 22 e 2 e 1 ja estão em base 5 falta o primeiro.
+
+No primeiro fazemos 4 * 4 que é 16 mas na notação em base 5 é 31 ou seja fazemos a multiplicação aplicando resultado da base 5, depois pegamos 31 * 4 que é = 4*1 = 4 e 4*3 que é 12 na base 10  mas na base 5 é 22 n ,1 * 4 que é = 4*1 = 4 e mas na base 5 é 22 ou seja ficamos com 224. fazendo essa multiplicação aplicando sempre o valor com a base 5 temos a seguinte sequencia.
+
+4*4 = 16 na base 10 = 31 na base 5
+
+31 * 4 = 224 na base 5.
+
+224* 4 = 2011 na base 5
+
+2011* 4 = 13044 na base 5
+
+13044 * 3 = 44242 na base 5 .
+
+Agora somamos o que ta dentro do parentese 
+
+(44242 + 22 + 2) * 4 + 1
+
+somamos respeitando que estamos na base 5
+
+fica (44321(base 5))*4 + 1 =
+Agora multiplicamos 44321 por 4 e a conta é feita com base na base 5 que da.
+
+44321 * 4 = 343334
+
+343334 + 1 =343340(soma na base 5 )
+
+
+3000321 na base 4 é 343340 na base 5
+
+base 5 para 10
+
+Temos 343340 da base 5 , para passarmos para a base 10 facilmente é só escrevermos esse numero da seguinte forma :
+começando da direita para esquerda multiplicando todos por 5 e elevando ao expoente que começa do 0 , temos :
+
+3*5**5 + 4*5**4 + 3*5**3 + 3*5**2 + 4*5**1 + 0 * 5**0 = 12345 na base 10
+
+Da base 4 para a base 16
+
+A forma mais facil de fazer isso é lembrando que 4 e 16 são potencias de
+2 , pois 2^2=4, e 2^4 é 16 isso significa que podemos fazer essa
+conversão através da base 2.
+
+Primeiro passamos o nuero 3000321 da base 4 para a base 2 que atraves de uma mini tabela temos:
+------------------------
+Base 4
+00 | 0 
+01 | 1
+10 | 2
+11 | 3 
+
+Atraves dessa tabela podemos transformar da base 4 para a base 2.
+
+|11|00|00|00|11|10|01| = 11000000111001 esse é o número 3000321 escrito na base 2.
+
+com esse número escrito em forma binária descobrimos que para
+transformar ele para a base 4 pegamos 2 digitos pois o exponte de 2
+elevado a algo que da 4 é 2 . com isso concluimos que o número de
+digitos que precisamos para construir um número na base 8 é 4 digitos
+pois 2 elevado a 4 da 16.
+
+Para fazer a analise separamos em grupos de 4 da direita para a esquerda, ficando asssim:
+
+11|0000|0011|1001| como faltou 2 digitos para completar 4 digitos no componente mais a esquerda adiconamos zero para completar ficando :
+
+0011|0000|0011|1001| 
+
+com isso olhamos na tabela que digito em hexadecimal corresponde a esse
+binario.
+
+Hexadecimal Binário   Hexadecimal   Binário
+0           0000           8         1000
+1           0001           9         1001
+2           0010           A         1010
+3           0011           B         1011
+4           0100           C         1100
+5           0101           D         1101
+6           0110           E         1110
+7           0111           F         1111
+
+Analisando a tabela descobrimos 
+
+3|0|3|9 = 3039 na base 16

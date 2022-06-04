@@ -1,0 +1,135 @@
+Alekssander Santos do Carmo Martins
+alekssandersantos@gmail.com
+
+(*) Introdução 
+
+O programa antartida.c le os bytes de entrada no array /bs/ na ordem
+little-endian e retorna Um endereço web com o número associado aos
+bytes de entrada.
+
+(*) Como usar o programa 
+
+Para usar o antartida precisamos colocar nossos bytes de memoria
+diretamente no array bs na posição little-endian,exemplo: Temos o
+endereço de internet 65.21.52.178 para ulitlizar antartica devemos
+declarar assim :
+unsigned char bs[] = {178,52 ,21 ,65 }; /* little-endian */
+
+
+(*) Saída do programa
+Com a entrada:
+unsigned char bs[] = {178,52 ,21 ,65 }; /* little-endian */
+Compilando nosso antardida.c atraves do make e executando temos :
+
+%./antartida.exe
+antartida.xyz has address http://1091908786 
+A forma 178.52.21.65(little-endian) é a forma que o numero 1091908786
+é escrito na memoria do computador.
+ 
+colocando esse endereço no navegador e dando enter temos:
+  http://1091908786
+atualiza e fica :
+  https://antartida.xyz/
+Nesse site temos o seguinte texto :
+
+Você chegou à Antártida.
+
+  There must be one place left in the world
+  Where the skin says it can breathe
+  There's gotta be one place left in the world
+  It's a solitude of distance and relief
+  There's gotta be one place left in the world
+
+    -- Antarctica, Midnight Oil, 1990
+
+(*) Entendendo o programa Antardida
+
+#include <stdio.h>
+
+int main() {
+  unsigned char bs[] = {178,52,21,65}; /* little-endian */
+  unsigned int *p; p = (unsigned int *) bs;
+  printf("antartida.xyz has address http://%u\n", *p);
+}
+
+Primeiro definimos a biblioteca,Apos isso iniciamos nossa função
+principal(int main). Definimos um unsigned(Não assinado) char chamado
+bs que é um array que recebe os bytes no formato little-endian. Depois
+declaramos um ponteiro p que  vai apontar para a região de memória que
+queremos enxergar como int.  A região em si é os bytes de bs. Depois
+declaramos que queremos observar essa região como int para evitar
+complicações com o compilador.Nesse momento, p aponta pra bs.  Pra
+obter o valor que está escrito em p, pedimos ao compilador pra fazer a
+dereferência de p. Sendo assim o printf retorna um texto com o %u que
+vai referenciar o endereço de memoria de bs que é a variavel p.
+
+
+
+(*)Executando sizes.c
+
+./sizes.exe
+  1 is the size of char
+  1 is the size of unsigned char
+  4 is the size of int
+  4 is the size of unsigned int
+  2 is the size of short int
+  2 is the size of unsigned short int
+  2 is the size of short
+  2 is the size of unsigned short
+  8 is the size of long int
+  8 is the size of unsigned long int
+  8 is the size of long
+  8 is the size of unsigned long
+  8 is the size of long long
+  8 is the size of unsigned long long
+
+  8 is the size of char*
+  8 is the size of unsigned char*
+  8 is the size of int*
+  8 is the size of unsigned int*
+  8 is the size of void*
+
+100 is the size of array cs
+400 is the size of array is
+
+  1 is the size of int8_t
+  1 is the size of uint8_t
+  2 is the size of int16_t
+  2 is the size of uint16_t
+  4 is the size of int32_t
+  4 is the size of uint32_t
+  8 is the size of int64_t
+  8 is the size of uint64_t
+  8 is the size of uintmax_t
+
+Com esse programa conseguimos descobrir o tamanho de um long e int no
+computador.
+O tamanho do long no meu computador é 8 e o tamanho do int é 4.
+
+(*)Trocando o int para long no programa antartida.
+
+#include <stdio.h>
+
+int main() {
+  unsigned char bs[] = {178,52,21,65}; /* little-endian */
+  unsigned long *p; p = (unsigned long *) bs;
+  printf("antartida.xyz has address http://%lu\n", *p);
+}
+compilando e executando:
+%./antartida.exe
+ antartida.xyz has address http://18446687123535115442
+
+Ocorreu mudança no número,O número cresceu, o endereço encontrado agora
+não leva a lugar nenhum no navegador.
+
+Isso ocorreu devido ao fato de termos trocado int para long, e como eles
+ocupam espaços(bits) diferentes acaba refletindo em como esse espaço é
+armazenado na memoria, o int precisa de 4 bits para expressar um numero
+ja o long precisa de 8 bits, por isso o numero é muito maior quando
+usamos o long. Podemos perceber que os caracteres do número retornado é
+duplicado em relação a ultilização do int. 
+
+
+
+
+
